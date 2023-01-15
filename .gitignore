@@ -1,0 +1,32 @@
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+__pycache__/
+*.egg-info/
+.installed.cfg
+*.egg
+# DotEnv configuration
+.env
+# VS Code
+.vscode/
+# Jupyter NB Checkpoints
+.ipynb_checkpoints/
+# Mac OS-specific storage files
+.DS_Store
+# Mypy cache
+.mypy_cache/
+# Pycharm
+.idea
+# notebooks for experiments
+experiments/
