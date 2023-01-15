@@ -10,9 +10,9 @@
 ## General Information
 
 ## Technologies Used
+Python 3.10.2
 
 ## Dash App
-Python 3.10.2
 
 ## Setup
 
