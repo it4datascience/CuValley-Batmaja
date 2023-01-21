@@ -30,3 +30,4 @@ __pycache__/
 .idea
 # notebooks for experiments
 experiments/
+venv/
