@@ -15,8 +15,9 @@ layout = html.Div([
     dcc.Tabs(
         id='tabs-1',
         children=[
-            dcc.Tab(label='Zbiór danych', value='tab-1',style = {'color':'black'},selected_style ={"background":'#cca947',"border":"#b3b3b3"}),
-            dcc.Tab(label='Zmienna Objaśniana', value='tab-2',style = {'color':'black'},selected_style ={"background":'#cca947',"border":"#b3b3b3"}),
+            dcc.Tab(label='Historyczne dane w stacjach', value='tab-1',style = {'color':'black'},selected_style ={"background":'#fcb040',"border":"#b3b3b3"}),
+            dcc.Tab(label='Porównanie poziomów pomiędzy stacjami', value='tab-2',style = {'color':'black'},selected_style ={"background":'#fcb040',"border":"#b3b3b3"}),
+            dcc.Tab(label='Korelacja oddziaływania pomiędzy stacjami', value='tab-3',style = {'color':'black'},selected_style ={"background":'#fcb040',"border":"#b3b3b3"})
         ],
         value='tab-1',
     colors={
