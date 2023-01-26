@@ -1,5 +1,5 @@
 body {
-  background-color: white;
+  background-color: #6c6e67;
   margin: 5%;
 }
 .card_container {
@@ -65,16 +65,17 @@ body {
 'margin': 'auto',
 'color':'black'}
 
-.center-div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.left-div {
+    position: absolute;
+    top: 2.5%;
+    align-items: left;
+    justify-content: left;
     height: 5%;
-    width:100%;
+    width:90%;
 }
 .right-top-div{
     position: absolute;
-    top: 0;
+    top: 2.5%;
     right: 0;
     height: 5%;
     width: 20%
@@ -85,4 +86,6 @@ body {
   justify-content: space-between;
   width: 101%;
 }
+
+
 
