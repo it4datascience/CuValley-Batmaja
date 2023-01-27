@@ -1,11 +1,12 @@
 import dash
 from dash import html, dcc,callback, Input, Output
-from src.plots import CreateGraph
+from src.plots import DataAnalysis
 dash.register_page(__name__, order=1)
 
-example = 'example'
-cg = CreateGraph()
-figures = cg.load_eda_plots(names=[example])
+da = DataAnalysis()
+da.load_data(path = '../data/')
+figure_2 = da.line_plot("Stan poziomu wody w stacjach Głogów i Racibórz-Miedonia")
+
 
 layout = html.Div([
 # tytul
@@ -19,7 +20,7 @@ layout = html.Div([
             dcc.Tab(label='Porównanie poziomów pomiędzy stacjami', value='tab-2',style = {'color':'black'},selected_style ={"background":'#fcb040',"border":"#b3b3b3"}),
             dcc.Tab(label='Korelacja oddziaływania pomiędzy stacjami', value='tab-3',style = {'color':'black'},selected_style ={"background":'#fcb040',"border":"#b3b3b3"})
         ],
-        value='tab-1',
+        value='tab-2',
     colors={
         "border":"#b3b3b3", #obwodka
         "background":'white', #tlo
@@ -37,103 +38,16 @@ layout = html.Div([
 def render_content(tab):
     if tab=='tab-1':
         return html.Div([
-# statystyki opisowe
-html.Div([
-html.Div([
-html.H6(children='Title 1',
-style={'textAlign': 'center',
-'color': '#616161'}),
-html.H6(children='Value 1',
-                            style={'textAlign': 'center',
-                                   'color': 'white'}),
-                ], className='card_container three columns'),
-
-                html.Div([
-                    html.H6(children='Title 2',
-                            style={'textAlign': 'center',
-                                   'color': '#616161'}),
-                    html.H6(children='Value 2',
-                            style={'textAlign': 'center',
-                                   'color': 'white'}),
-                ], className='card_container three columns'),
-
-                html.Div([
-                    html.H6(children='Title 3',
-                            style={'textAlign': 'center',
-                                   'color': '#616161'}),
-                    html.H6(children='Value 3',
-                            style={'textAlign': 'center',
-                                   'color': 'white'}),
-                ], className='card_container three columns'),
-
-                html.Div([
-                    html.H6(children='Title 4',
-                            style={'textAlign': 'center',
-                                   'color': '#616161'}),
-                    html.H6(children="Value 4",
-                            style={'textAlign': 'center',
-                                   'color': 'white'}),
-
-                ], className='card_container_last three columns'), ], className='row flex display'),
-            # druga linia cards
-            html.Div([
-            # Wykres
-            html.Div([
-                html.Br(),
-                dcc.Graph(id="graph-1", figure=figures[0])
-            ], className='add_container twelve columns')
-        ])
 
         ])
     elif tab == 'tab-2':
         return html.Div([
+            html.Br(),
             html.Div([
-                html.Div([
-                    html.H6(children='Title 1',
-                            style={'textAlign': 'center',
-                                   'color': '#616161'}),
-                    html.H6(children='Value 1',
-                            style={'textAlign': 'center',
-                                   'color': 'white'}),
-                ], className='card_container three columns'),
+                html.Br(),
+                dcc.Graph(figure=figure_2),
 
-                html.Div([
-                    html.H6(children='Title 2',
-                            style={'textAlign': 'center',
-                                   'color': '#616161'}),
-                    html.H6(children='Value 2',
-                            style={'textAlign': 'center',
-                                   'color': 'white'}),
-                ], className='card_container three columns'),
-
-                html.Div([
-                    html.H6(children='Title 3',
-                            style={'textAlign': 'center',
-                                   'color': '#616161'}),
-                    html.H6(children='Value 3',
-                            style={'textAlign': 'center',
-                                   'color': 'white'}),
-                ], className='card_container three columns'),
-
-                html.Div([
-                    html.H6(children='Title 4',
-                            style={'textAlign': 'center',
-                                   'color': '#616161'}),
-                    html.H6(children="Value 4",
-                            style={'textAlign': 'center',
-                                   'color': 'white'}),
-
-                ], className='card_container_last three columns'), ], className='row flex display'),
-            # druga linia cards
-            html.Div([
-                # Wykres
-                html.Div([
-                    html.Br(),
-                    dcc.Graph(id="graph-1", figure=figures[0],style={
-                                "width": "100%",
-                                "height": "100%"
-                            })
-                ], className='add_container twelve columns textAlign center',)
-            ])
-
+            ],
+                className='add_container twelve columns'
+            )
         ])
