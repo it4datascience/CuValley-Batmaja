@@ -168,20 +168,47 @@ class SaveData():
 class MLModels():
     def __init__(self):
         self.df = pd.DataFrame
+        self.dates_idx = pd.date_range(start='2012-01-01', end='2021-10-31', freq='1D')
     def load_data(self, path='../results/'):
         self.models_forecast = pd.read_csv(path+'models_forecast.csv')
         self.models_historical_forecasts = pd.read_csv(path+'historical_forecasts.csv')
         self.models_metrics = pd.read_csv(path+'models_metrics.csv')
+        self.dataset = pd.read_csv(path+'prepared_data.csv')
+        self.test_dataset = pd.read_json(path+'test_dataset.json',orient='split')
+        self.dataset['Data'] = pd.to_datetime(self.dataset['Data'], format='%Y-%m-%d')
         self.models_forecast['Data'] = pd.to_datetime(self.models_forecast['Data'], format='%Y-%m-%d')
         self.models_historical_forecasts['Data'] = pd.to_datetime(self.models_historical_forecasts['Data'], format='%Y-%m-%d')
         return None
     def model_evaluation_plot(self, model='Baseline', target_to_viz = 'GŁOGÓW (151160060) Stan wody [cm]',horizon_to_viz = 7, title=''):
         df = self.models_historical_forecasts[(self.models_historical_forecasts['Model'] == model)]
-        trace1 = go.Scatter(x=self.models_historical_forecasts[target_to_viz].index,
-                            y=self.models_historical_forecasts[target_to_viz][f'Forecast_-{horizon_to_viz}D'], marker_color='#fcb040')
-        trace2 = go.Scatter(x=self.models_historical_forecasts[target_to_viz].index,
-                           y=self.models_historical_forecasts[target_to_viz][f'Forecast_-{horizon_to_viz}D'],
-                           marker_color='#fcb040')
+        df=df[(df['Stacja']==target_to_viz)]
+        df_2 = self.dataset
+
+        #d = df[f'Forecast_-{horizon_to_viz}D']
+        trace1 = go.Scatter(x=df.Data,
+                            y=df[f'Forecast_-{horizon_to_viz}D'], marker_color='#fcb040', name = 'Prognoza modelu')
+        trace2 = go.Scatter(x=df_2['Data'],
+                            y=df_2[target_to_viz], marker_color='black', name='Dane historyczne')
+        traces = [trace1, trace2]
+        layout = go.Layout(title=title, xaxis=dict(title='Czas', showgrid=False, color='black'),
+                           yaxis=dict(title='Poziom wody', showgrid=False, title_font={"size": 20}, color='black'))
+        fig = go.Figure(data=traces, layout=layout)
+        fig.layout.height = 600
+        fig.layout.width = 1200
+        fig.update_layout(title_font={'size': 30}, title_x=0.5, font_family="Lato, sans-serif",
+                          paper_bgcolor='rgba(0,0,0,0)',
+                          plot_bgcolor='rgba(0,0,0,0)',xaxis_range=[df.Data.iloc[0],df.Data.iloc[-1]])
+        return fig
+
+    def model_forecast_plot(self, model='Baseline', target_to_viz = 'GŁOGÓW (151160060) Stan wody [cm]', title='',
+                            len_historic_data=60, zmienne=None):
+        df = self.models_forecast[(self.models_forecast['Model'] == model)]
+        df_2 = self.dataset
+        df_2 = df_2[(df_2['Data'] >= '2012-01-01') & (df_2['Data'] <= '2021-10-31')]
+        trace1 = go.Scatter(x=df.Data,
+                            y=df[target_to_viz], marker_color='black', name='Predykcja')
+        trace2 = go.Scatter(x=df_2.Data[-len_historic_data:],
+                            y=df_2[target_to_viz][-len_historic_data:], marker_color='#fcb040', name='Dane historyczne')
         traces = [trace1, trace2]
         layout = go.Layout(title=title, xaxis=dict(title='Czas', showgrid=False, color='black'),
                            yaxis=dict(title='Poziom wody', showgrid=False, title_font={"size": 20}, color='black'))
@@ -191,10 +218,8 @@ class MLModels():
         fig.update_layout(title_font={'size': 30}, title_x=0.5, font_family="Lato, sans-serif",
                           paper_bgcolor='rgba(0,0,0,0)',
                           plot_bgcolor='rgba(0,0,0,0)')
-        return fig
 
-    def model_forecast_plot(self):
-        return None
+        return fig
 
 
 

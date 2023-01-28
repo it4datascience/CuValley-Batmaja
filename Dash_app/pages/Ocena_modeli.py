@@ -17,6 +17,7 @@ y_test = pd.read_csv('../Dash_app/assets/y_test.csv')
 ml = MLModels()
 ml.load_data()
 figure_1 = ml.model_evaluation_plot()
+figure_2 = ml.model_evaluation_plot(model='Bayesian Ridge')
 
 
 
@@ -29,7 +30,6 @@ dcc.Tabs(
         children=[
             dcc.Tab(label='Baseline', value='tab-1',style = {'color':'black'},selected_style ={"background":'#fcb040',"border":"#b3b3b3"}),
             dcc.Tab(label='Bayesian Ridge', value='tab-2',style = {'color':'black'},selected_style ={"background":'#fcb040',"border":"#b3b3b3"}),
-            dcc.Tab(label='Temporal Fusion Transformer', value='tab-3',style = {'color':'black'},selected_style ={"background":'#fcb040',"border":"#b3b3b3"})
         ],
         value='tab-1',
     colors={
@@ -61,9 +61,13 @@ def render_content(tab):
         ])
     elif tab == 'tab-2':
         return html.Div([
+            html.Br(),
+            html.Div([
+                html.Br(),
+                dcc.Graph(figure=figure_2),
 
-        ])
-    elif tab == 'tab-3':
-        return html.Div([
+            ],
+                className='add_container twelve columns'
+            )
 
         ])
