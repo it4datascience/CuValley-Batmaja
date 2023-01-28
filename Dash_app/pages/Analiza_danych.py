@@ -9,9 +9,9 @@ da.load_corr_stations()
 figure_1 = da.line_plot("Stan poziomu wody w stacjach Głogów i Racibórz-Miedonia")
 figure_2 = da.corr_stations()
 figure_3 = da.corr_stations_2()
-drop_style = {'background-color': '#cfa527', 'textAlign': 'center', 'margin': 'auto', 'color':'black'}
-water_level_cols = {'GŁOGÓW (151160060) Stan wody [cm]','RACIBÓRZ-MIEDONIA (150180060) Stan wody [cm]'}
-hydro_cols = []
+drop_style = {'background-color': '#fcb040', 'textAlign': 'center', 'margin': 'auto', 'color':'black'}
+water_level_cols = ['GŁOGÓW (151160060) Stan wody [cm]','RACIBÓRZ-MIEDONIA (150180060) Stan wody [cm]']
+hydro_cols = ['GŁOGÓW (151160060)','RACIBÓRZ-MIEDONIA (150180060)']
 meteo_cols=[]
 drop_station = dcc.Dropdown(id='drop-1',
                             options=[{"label":i.split(")")[0]+')', "value":i} for i in water_level_cols],
@@ -19,7 +19,7 @@ drop_station = dcc.Dropdown(id='drop-1',
                             style=drop_style
                             )
 drop_hydro = dcc.Dropdown(id='drop-2',
-                            options=[{"label":i.split(")")[0]+')', "value":i} for i in hydro_cols],
+                            options=[{"label":i, "value":i} for i in hydro_cols],
                             placeholder='Wybierz stację hydrologiczną do analizy', className='dropdown',multi=True,
                             style=drop_style
                             )

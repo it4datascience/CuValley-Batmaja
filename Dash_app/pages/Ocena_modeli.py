@@ -12,14 +12,12 @@ with open('../Dash_app/assets/fitted_model.pkl', 'rb') as file:
 X_test = pd.read_csv('../Dash_app/assets/X_test.csv')
 y_test = pd.read_csv('../Dash_app/assets/y_test.csv')
 
-# de = DashExplainers(model, X_test, y_test)
-# importance = de.plot_importance()
 ml = MLModels()
 ml.load_data()
 figure_1 = ml.model_evaluation_plot()
 figure_2 = ml.model_evaluation_plot(model='Bayesian Ridge')
 
-drop_style = {'background-color': '#cfa527', 'textAlign': 'center', 'margin': 'auto', 'color':'black'}
+drop_style = { 'background-color': '#fcb040','textAlign': 'center', 'margin': 'auto', 'color':'black'}
 station_cols = ml.models_historical_forecasts['Stacja'].unique()
 horizon_cols = ml.models_historical_forecasts.columns.drop(labels=['Data','Model','Stacja','Zmienne'])
 drop_station = dcc.Dropdown(id='drop-4',
@@ -29,7 +27,7 @@ drop_station = dcc.Dropdown(id='drop-4',
                             )
 drop_horizon = dcc.Dropdown(id='drop-5',
                             options=[{"label":i, "value":i} for i in horizon_cols],
-                            placeholder='Wybierz horyzont czasowy do analizy', className='dropdown',multi=True,
+                            placeholder='Wybierz horyzont czasowy do analizy', className='dropdown',multi=False,
                             style=drop_style
                             )
 
@@ -68,9 +66,10 @@ def render_content(tab):
             drop_station,
             html.Br(),
             drop_horizon,
+            html.Br(),
             html.Div([
                 html.Br(),
-                dcc.Graph(figure=figure_1),
+                dcc.Graph(id="graph-4",figure=figure_1),
 
             ],
                 className='add_container twelve columns'
@@ -82,12 +81,40 @@ def render_content(tab):
             drop_station,
             html.Br(),
             drop_horizon,
+            html.Br(),
             html.Div([
                 html.Br(),
-                dcc.Graph(figure=figure_2),
+                dcc.Graph(id="graph-4",figure=figure_2),
 
             ],
                 className='add_container twelve columns'
             )
 
         ])
+@callback(
+        [Output('graph-4', 'figure'),
+         ],
+        [Input('drop-4', 'value'),
+        Input('drop-5', 'value'),
+        Input('tabs-1', 'value')]
+)
+def update_graph(drop,drop_2,tab):
+    figure=dash.no_update
+    if tab == 'tab-1':
+        model='Baseline'
+        target_to_viz = drop,
+        horizon_to_viz = 7,
+        title = ''
+    elif tab == 'tab-2':
+        model = 'Bayesian Ridge'
+    if drop is not None:
+        ml.load_data()
+        figure = ml.model_evaluation_plot(model = model,target_to_viz=drop,horizon_to_viz=drop_2)
+    elif drop_2 is not None:
+        ml.load_data()
+        figure = ml.model_evaluation_plot(model=model, target_to_viz=drop, horizon_to_viz=drop_2)
+    return figure
+
+
+
+

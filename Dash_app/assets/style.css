@@ -62,7 +62,7 @@ body {
   background-color: #666663;
 }
 .dropdown{
-background-color: #cfa527;
+width:100%;
 textAlign: center;
 margin: auto;
 color:black;}

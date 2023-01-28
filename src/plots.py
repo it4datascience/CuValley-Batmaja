@@ -93,8 +93,8 @@ class DataAnalysis:
         trace1 = go.Scatter(x=self.hydro['Data'], y=self.hydro['GŁOGÓW (151160060) Stan wody [cm]'], name='Stacja Głogów',marker_color='#fcb040')
         trace2 = go.Scatter(x=self.hydro['Data'], y=self.hydro['RACIBÓRZ-MIEDONIA (150180060) Stan wody [cm]'], name='Stacja Racibórz-Miedonia',marker_color='#035891',)
         traces = [trace1, trace2]
-        layout = go.Layout(title=title, xaxis=dict(title = 'Czas',showgrid=False,color='black'),
-                           yaxis=dict(title = 'Poziom wody',showgrid=False,title_font={"size": 20},color='black'))
+        layout = go.Layout(title=title, xaxis=dict(title = 'Czas',showgrid=False,color='#035891',title_font={"size": 20}),
+                           yaxis=dict(title = 'Poziom wody',showgrid=False,title_font={"size": 20},color='#035891'))
         fig = go.Figure(data=traces, layout=layout)
         fig.layout.height = 600
         fig.layout.width = 1200
@@ -107,20 +107,21 @@ class DataAnalysis:
         rs=literal_eval(self.rs)
         df = {'rs': rs, 'Offset': list(range(-9,10))}
         df = pd.DataFrame(data=df)
-        data = px.line(df,y='rs',x='Offset')
+        data = px.line(df,y='rs',x='Offset')  #, line_color='#fcb040'
         layout = go.Layout()
 
         fig = go.Figure(data=data, layout=layout)
-        fig.update_layout(
-            xaxis_title='Offset', yaxis_title='Pearson r',
+        fig.update_traces(line_color='#fcb040', line_width=3.5)
+        fig.update_layout(title = 'Korelacja krzyżowa opóźnienia w czasie pomiędzy stacjami hydrologicznymi Głogów i Racibórz-Miedonia',
+            xaxis_title='Offset', yaxis_title='Pearson r',xaxis_title_font={"size": 20},yaxis_title_font={"size": 20},
             xaxis_tickvals=[-9, -6, -3, 0, 3, 6, 9],
-            xaxis_range=[-9, 9], yaxis_range=[0, 1])
-        fig.add_trace(go.Scatter(x=[0, 0], y=[0, 1], mode='lines', name='Center'))
+            xaxis_range=[-9, 9], yaxis_range=[df.rs.min() -0.1, df.rs.max() +0.1])
+        fig.add_trace(go.Scatter(x=[0, 0], y=[df.rs.min() -0.1, df.rs.max() +0.1], mode='lines', name='Center',marker_color='black'))
         fig.add_trace(go.Scatter(x=[df._get_value(df['rs'].idxmax(), 'Offset'),df._get_value(df['rs'].idxmax(), 'Offset')]
-                                 , y=[0, 1], mode='lines', name='Peak synchrony'))
+                                 , y=[df.rs.min() -0.1, df.rs.max() +0.1], mode='lines', name='Peak synchrony',marker_color='#035891'))
         fig.layout.height = 600
         fig.layout.width = 1200
-        fig.update_layout(title_font={'size': 30}, title_x=0.5, font_family="Lato, sans-serif",
+        fig.update_layout(title_font={'size': 20}, title_x=0.5, font_family="Lato, sans-serif",
                           paper_bgcolor='rgba(0,0,0,0)',
                           plot_bgcolor='rgba(0,0,0,0)')
         return fig
@@ -139,17 +140,20 @@ class DataAnalysis:
         data = px.line(df, y='rs', x='Offset')
         layout = go.Layout()
         fig = go.Figure(data=data, layout=layout)
+        fig.update_traces(line_color='#fcb040', line_width=3.5)
         fig.update_layout(
-            xaxis_title='Offset', yaxis_title='Pearson r',
+            title='Korelacja krzyżowa opóźnienia w czasie pomiędzy stacją {0},a opadami mierzonymi w stacji {1}'.
+            format(pierwsza_stacja,druga_stacja.split('(')[0]),
+            xaxis_title='Offset', yaxis_title='Pearson r',xaxis_title_font={"size": 20},yaxis_title_font={"size": 20},
             xaxis_tickvals=[-9, -6, -3, 0, 3, 6, 9],
-            xaxis_range=[-9, 9], yaxis_range=[-0.1, 0.5])
-        fig.add_trace(go.Scatter(x=[0, 0], y=[0, 1], mode='lines', name='Center'))
+            xaxis_range=[-9, 9], yaxis_range=[df.rs.min() -0.1, df.rs.max() +0.1])
+        fig.add_trace(go.Scatter(x=[0, 0], y=[df.rs.min() -0.1, df.rs.max() +0.1], mode='lines', name='Center',marker_color='black'))
         fig.add_trace(
             go.Scatter(x=[df._get_value(df['rs'].idxmax(), 'Offset'), df._get_value(df['rs'].idxmax(), 'Offset')],
-                       y=[0, 1], mode='lines', name='Peak synchrony'))
+                       y=[df.rs.min() -0.1, df.rs.max() +0.1], mode='lines', name='Peak synchrony',marker_color='#035891'))
         fig.layout.height = 600
         fig.layout.width = 1200
-        fig.update_layout(title_font={'size': 30}, title_x=0.5, font_family="Lato, sans-serif",
+        fig.update_layout(title_font={'size': 20}, title_x=0.5, font_family="Lato, sans-serif",
                           paper_bgcolor='rgba(0,0,0,0)',
                           plot_bgcolor='rgba(0,0,0,0)')
         return fig
@@ -179,37 +183,54 @@ class MLModels():
         self.models_forecast['Data'] = pd.to_datetime(self.models_forecast['Data'], format='%Y-%m-%d')
         self.models_historical_forecasts['Data'] = pd.to_datetime(self.models_historical_forecasts['Data'], format='%Y-%m-%d')
         return None
-    def model_evaluation_plot(self, model='Baseline', target_to_viz = 'GŁOGÓW (151160060) Stan wody [cm]',horizon_to_viz = 7, title=''):
+    def model_evaluation_plot(self, model='Baseline', target_to_viz = 'GŁOGÓW (151160060) Stan wody [cm]',
+                              horizon_to_viz = 7,
+                              title='Porównanie wartości prognozowanych przez model z wartościami rzeczywistymi'
+                              ):
         df = self.models_historical_forecasts[(self.models_historical_forecasts['Model'] == model)]
         df=df[(df['Stacja']==target_to_viz)]
         df_2 = self.dataset
-        trace1 = go.Scatter(x=df.Data,
-                            y=df[f'Forecast_-{horizon_to_viz}D'], marker_color='#fcb040', name = 'Prognoza modelu')
-        trace2 = go.Scatter(x=df_2['Data'],
-                            y=df_2[target_to_viz], marker_color='black', name='Dane historyczne')
+        if model=='Baseline':
+            trace1 = go.Scatter(x=df.Data,
+                                y=df[f'Forecast_-{horizon_to_viz}D'], marker_color='#fcb040', name='Prognoza modelu')
+            trace2 = go.Scatter(x=df_2['Data'],
+                                y=df_2[target_to_viz], marker_color='black', name='Dane historyczne')
+        else:
+            trace1 = go.Scatter(x=df.loc[df['Zmienne'] == 'Past+Future', 'Data'],
+                                y=df.loc[df['Zmienne'] == 'Past+Future',f'Forecast_-{horizon_to_viz}D'], marker_color='#fcb040', name='Prognoza modelu')
+            trace2 = go.Scatter(x=df_2['Data'],
+                                y=df_2[target_to_viz], marker_color='black', name='Dane historyczne')
         traces = [trace1, trace2]
-        layout = go.Layout(title=title, xaxis=dict(title='Czas', showgrid=False, color='black'),
-                           yaxis=dict(title='Poziom wody', showgrid=False, title_font={"size": 20}, color='black'))
+        layout = go.Layout(title=title+' dla stacji {0}'.format(target_to_viz.split('(')[0]), xaxis=dict(title='Czas', showgrid=False, color='black'),
+                           yaxis=dict(title='Poziom wody', showgrid=False, title_font={"size": 20}, color='black')
+                           ,xaxis_title_font={"size": 20})
         fig = go.Figure(data=traces, layout=layout)
         fig.layout.height = 600
         fig.layout.width = 1200
-        fig.update_layout(title_font={'size': 30}, title_x=0.5, font_family="Lato, sans-serif",
+        fig.update_layout(title_font={'size': 20}, title_x=0.5, font_family="Lato, sans-serif",
                           paper_bgcolor='rgba(0,0,0,0)',
                           plot_bgcolor='rgba(0,0,0,0)',xaxis_range=[df.Data.iloc[0],df.Data.iloc[-1]])
         return fig
 
-    def model_forecast_plot(self, model='Baseline', target_to_viz = 'GŁOGÓW (151160060) Stan wody [cm]', title='',
+    def model_forecast_plot(self, model='Baseline', target_to_viz = 'GŁOGÓW (151160060) Stan wody [cm]',
+                            title='Predykcja modelu w przyszłość',
                             len_historic_data=60, zmienne=None):
         df = self.models_forecast[(self.models_forecast['Model'] == model)]
         df_2 = self.dataset
         df_2 = df_2[(df_2['Data'] >= '2012-01-01') & (df_2['Data'] <= '2021-10-31')]
-        trace1 = go.Scatter(x=df.Data,
-                            y=df[target_to_viz], marker_color='black', name='Predykcja')
+        if model =='Baseline':
+            trace1 = go.Scatter(x=df.Data,
+                                y=df[target_to_viz], marker_color='black', name='Predykcja')
+        else:
+            trace1 = go.Scatter(x=df.loc[df['Zmienne'] == 'Past+Future', 'Data'],
+                                y=df.loc[df['Zmienne'] == 'Past+Future',target_to_viz], marker_color='black', name='Predykcja')
+
         trace2 = go.Scatter(x=df_2.Data[-len_historic_data:],
                             y=df_2[target_to_viz][-len_historic_data:], marker_color='#fcb040', name='Dane historyczne')
         traces = [trace1, trace2]
         layout = go.Layout(title=title, xaxis=dict(title='Czas', showgrid=False, color='black'),
-                           yaxis=dict(title='Poziom wody', showgrid=False, title_font={"size": 20}, color='black'))
+                           yaxis=dict(title='Poziom wody', showgrid=False, title_font={"size": 20}, color='black'),
+                           xaxis_title_font={"size": 20})
         fig = go.Figure(data=traces, layout=layout)
         fig.layout.height = 600
         fig.layout.width = 1200
