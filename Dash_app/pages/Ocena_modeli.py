@@ -3,7 +3,7 @@ from dash import html, dcc,callback, Input, Output
 from joblib import load
 import pandas as pd
 import dalex as dx
-from src.plots import DashExplainers
+from src.plots import MLModels
 dash.register_page(__name__, order=2)
 
 
@@ -14,6 +14,9 @@ y_test = pd.read_csv('../Dash_app/assets/y_test.csv')
 
 # de = DashExplainers(model, X_test, y_test)
 # importance = de.plot_importance()
+ml = MLModels()
+ml.load_data()
+figure_1 = ml.model_evaluation_plot()
 
 
 
@@ -47,7 +50,14 @@ html.Div(id='div-2')
 def render_content(tab):
     if tab=='tab-1':
         return html.Div([
+            html.Br(),
+            html.Div([
+                html.Br(),
+                dcc.Graph(figure=figure_1),
 
+            ],
+                className='add_container twelve columns'
+            )
         ])
     elif tab == 'tab-2':
         return html.Div([
