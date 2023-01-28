@@ -6,21 +6,16 @@ Projekt uczenia maszynowego do predykcji poziomu wody w Odrze zrealizowany w ram
 
 Rezultaty zostały przedstawione w interaktywnej aplikacji dostępnej pod adresem https://cuvalley-2023-kw5yuowusq-lm.a.run.app/analiza-danych
 
+Szeregi czasowe mają strukturę szeregów wielowymiarowych z zmiennych objaśniającymi (Multivariate TimeSeries with Covariates). Poziom rzeki w obu stacjach jest powiązany ze sobą, ponieważ pochodzą z tego samego procesu w rozumieniu szeregów czasowych. Opady wpływają na poziomy w obu stacjach pośrednio. Podczas eksploracyjnej analizy danych i korelacji krzyżowej udowodniliśmy zależności pomiędzy obiema stacjami oraz wpływem opadów na te stacje. Ponadto poziom wody w stacjach podlega sezonowości.
 
-## Table of Contents
-* [General Information](#general-information)
-* [Technologies Used](#technologies-used)
-* [App Pages](#app-pages)
-* [Setup](#setup)
-* [Acknowledgements](#Acknowledgements)
+Korelacja krzyżowa pomiędzy stacjami:
+![explanation](results/TLCC-GŁOGÓW-RACIBÓRZ-MIEDONIA.png)
 
-## General Information
+Korelacja krzyżowa pomiędzy stacją w Głogowie a opadami (z uwzględnieniem zagregowanej średniej i mediany z wszystkich stacji):
+![explanation](results/TLCC-GŁOGÓW-opady.png)
 
-## Technologies Used
-Python 3.10.2
 
-## Dash App
 
-## Setup
-
-## Acknowledgements
+Materiały uzupełniające:
+- [Szeregi wielowymiarowe a wiele szeregów czasowych](https://unit8co.github.io/darts/userguide/timeseries.html#multivariate-time-series-vs-multiple-time-series)
+- [Zmienne objaśniające dla szeregów czasowych](https://unit8co.github.io/darts/userguide/covariates.html)
