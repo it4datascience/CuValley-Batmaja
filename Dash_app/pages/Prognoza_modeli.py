@@ -1,7 +1,19 @@
 import dash
 from dash import html, dcc,callback, Input, Output
+from src.plots import MLModels
 dash.register_page(__name__, order=3)
 
+ml = MLModels()
+ml.load_data()
+figure_1 = ml.model_forecast_plot()
+figure_2 = ml.model_forecast_plot(model='Bayesian Ridge')
+drop_style = {'background-color': '#fcb040', 'textAlign': 'center', 'margin': 'auto', 'color':'black'
+              }
+station_cols = ['GŁOGÓW (151160060) Stan wody [cm]','RACIBÓRZ-MIEDONIA (150180060) Stan wody [cm]']
+drop_station = dcc.Dropdown(id='drop-6',
+                            options=[{"label":i, "value":i} for i in station_cols],
+                            placeholder='Wybierz stację do analizy', className='dropdown',multi=True,
+                            style=drop_style)
 layout = html.Div(
 html.Div([
 html.Br(),
@@ -10,7 +22,6 @@ dcc.Tabs(
         children=[
             dcc.Tab(label='Baseline', value='tab-1',style = {'color':'black'},selected_style ={"background":'#fcb040',"border":"#b3b3b3"}),
             dcc.Tab(label='Bayesian Ridge', value='tab-2',style = {'color':'black'},selected_style ={"background":'#fcb040',"border":"#b3b3b3"}),
-            dcc.Tab(label='Temporal Fusion Transformer', value='tab-3',style = {'color':'black'},selected_style ={"background":'#fcb040',"border":"#b3b3b3"})
         ],
         value='tab-1',
     colors={
@@ -31,13 +42,29 @@ html.Div(id='div-3')
 def render_content(tab):
     if tab=='tab-1':
         return html.Div([
+            html.Br(),
+            drop_station,
+            html.Br(),
+            html.Div([
+                html.Br(),
+                dcc.Graph(figure=figure_1),
+
+            ],
+                className='add_container twelve columns'
+            )
 
         ])
     elif tab == 'tab-2':
         return html.Div([
+            html.Br(),
+            drop_station,
+            html.Br(),
+            html.Div([
+                html.Br(),
+                dcc.Graph(figure=figure_2),
 
-        ])
-    elif tab == 'tab-3':
-        return html.Div([
+            ],
+                className='add_container twelve columns'
+            )
 
         ])

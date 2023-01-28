@@ -62,10 +62,10 @@ body {
   background-color: #666663;
 }
 .dropdown{
-'background-color': '#cfa527',
-'textAlign': 'center',
-'margin': 'auto',
-'color':'black'}
+width:100%;
+textAlign: center;
+margin: auto;
+color:black;}
 
 .left-div {
     position: absolute;
