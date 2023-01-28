@@ -7,6 +7,13 @@ ml = MLModels()
 ml.load_data()
 figure_1 = ml.model_forecast_plot()
 figure_2 = ml.model_forecast_plot(model='Bayesian Ridge')
+drop_style = {'background-color': '#cfa527', 'textAlign': 'center', 'margin': 'auto', 'color':'black'}
+station_cols = ['GŁOGÓW (151160060) Stan wody [cm]','RACIBÓRZ-MIEDONIA (150180060) Stan wody [cm]']
+print(station_cols)
+drop_station = dcc.Dropdown(id='drop-6',
+                            options=[{"label":i, "value":i} for i in station_cols],
+                            placeholder='Wybierz stację do analizy', className='dropdown',multi=True,
+                            style=drop_style)
 layout = html.Div(
 html.Div([
 html.Br(),
@@ -36,6 +43,8 @@ def render_content(tab):
     if tab=='tab-1':
         return html.Div([
             html.Br(),
+            drop_station,
+            html.Br(),
             html.Div([
                 html.Br(),
                 dcc.Graph(figure=figure_1),
@@ -47,6 +56,8 @@ def render_content(tab):
         ])
     elif tab == 'tab-2':
         return html.Div([
+            html.Br(),
+            drop_station,
             html.Br(),
             html.Div([
                 html.Br(),

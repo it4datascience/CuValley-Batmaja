@@ -21,7 +21,7 @@ figure_2 = ml.model_evaluation_plot(model='Bayesian Ridge')
 
 drop_style = {'background-color': '#cfa527', 'textAlign': 'center', 'margin': 'auto', 'color':'black'}
 station_cols = ml.models_historical_forecasts['Stacja'].unique()
-horizon_cols = []
+horizon_cols = ml.models_historical_forecasts.columns.drop(labels=['Data','Model','Stacja','Zmienne'])
 drop_station = dcc.Dropdown(id='drop-4',
                             options=[{"label":i, "value":i} for i in station_cols],
                             placeholder='Wybierz stację do analizy', className='dropdown',multi=True,
@@ -30,7 +30,8 @@ drop_station = dcc.Dropdown(id='drop-4',
 drop_horizon = dcc.Dropdown(id='drop-5',
                             options=[{"label":i, "value":i} for i in horizon_cols],
                             placeholder='Wybierz horyzont czasowy do analizy', className='dropdown',multi=True,
-                            style=drop_style)
+                            style=drop_style
+                            )
 
 
 
