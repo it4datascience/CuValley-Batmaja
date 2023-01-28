@@ -17,7 +17,7 @@ Korelacja krzyżowa pomiędzy stacją w Głogowie a opadami (z uwzględnieniem z
 Jako model wybrano **Bayesian Ridge**, który uwzględnia szeregi wielowymariowe (podobnie jak VARIMA). Wdrożono również model Bazowy (prognozuje ostatnią wartość ze zbioru treningowego) do celów porównawczych.
 
 Dokonane walidacje czy backtesty nie niosły ze sobą wycieku danych (brak losowości), dlatego rezultaty są wiarygodne. Poniżej zaprezentowano backtesty dla zbioru testowego.
-![backtests](Backtests_-7D.png)
+![backtests](results/Backtests_-7D.png)
 
 
 Materiały uzupełniające:
