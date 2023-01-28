@@ -1,5 +1,6 @@
 dalex==1.5.0
 dash==2.7.0
+darts==0.23.1
 gunicorn==20.1.0
 matplotlib==3.6.0
 numpy==1.23.0
