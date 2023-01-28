@@ -1,7 +1,7 @@
 import dash
 from dash import html, dcc,callback, Input, Output
 from src.plots import MLModels
-dash.register_page(__name__, order=3)
+dash.register_page(__name__, order=2)
 
 ml = MLModels()
 ml.load_data()
@@ -12,7 +12,7 @@ drop_style = {'background-color': '#fcb040', 'textAlign': 'center', 'margin': 'a
 station_cols = ['GŁOGÓW (151160060) Stan wody [cm]','RACIBÓRZ-MIEDONIA (150180060) Stan wody [cm]']
 drop_station = dcc.Dropdown(id='drop-6',
                             options=[{"label":i, "value":i} for i in station_cols],
-                            placeholder='Wybierz stację do analizy', className='dropdown',multi=True,
+                            placeholder='Wybierz stację do analizy', className='dropdown',multi=False,
                             style=drop_style)
 layout = html.Div(
 html.Div([
@@ -47,7 +47,7 @@ def render_content(tab):
             html.Br(),
             html.Div([
                 html.Br(),
-                dcc.Graph(figure=figure_1),
+                dcc.Graph(id = 'graph-5',figure=figure_1),
 
             ],
                 className='add_container twelve columns'
@@ -61,10 +61,27 @@ def render_content(tab):
             html.Br(),
             html.Div([
                 html.Br(),
-                dcc.Graph(figure=figure_2),
+                dcc.Graph(id = 'graph-5',figure=figure_2),
 
             ],
                 className='add_container twelve columns'
             )
 
         ])
+@callback(
+        [Output('graph-5', 'figure'),
+         ],
+        [Input('drop-6', 'value'),
+        Input('tabs-3', 'value')]
+)
+def update_graph(drop,tab):
+    target_to_viz='GŁOGÓW (151160060) Stan wody [cm]'
+    model='Baseline'
+    if tab == 'tab-1':
+        model='Baseline'
+    elif tab == 'tab-2':
+        model = 'Bayesian Ridge'
+    if drop is not None:
+        target_to_viz = drop
+    figure = ml.model_evaluation_plot(model=model, target_to_viz=target_to_viz)
+    return [figure]
