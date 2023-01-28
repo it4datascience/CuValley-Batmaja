@@ -5,6 +5,8 @@ import dalex as dx
 from plotly.io import to_json, read_json
 import plotly.graph_objs as go
 import plotly.express as px
+import numpy as np
+from ast import literal_eval
 
 class CreateGraph:
     """
@@ -57,7 +59,8 @@ class DashExplainers:
 class DataAnalysis:
     def __init__(self):
         self.dates_idx = pd.date_range(start='2011-01-01', end='2021-10-31', freq='1D')
-    def load_data(self,path):
+    def load_hydro_data(self,path):
+        #Load hydro
         self.hydro = pd.read_excel(path+'hydro.xlsx', sheet_name='hydro', header=[1, 2])
         # taking only Date and level of water
         self.hydro.columns = ['Data'] + [f'{col_name} Stan wody [cm]' for col_name in self.hydro.columns.get_level_values(0)][1:]
@@ -72,6 +75,20 @@ class DataAnalysis:
         for col_name in self.hydro.columns[1:]:
             self.hydro[col_name] = self.hydro[col_name].astype(int)
         return self.hydro
+
+    def load_prepared_dataset(self, path='../results/'):
+        self.dataset = pd.read_csv(path+'prepared_data.csv')
+        self.dataset['Data'] = pd.to_datetime(self.dataset['Data'], format='%Y-%m-%d')
+        self.hierarchy = pd.read_csv(path+'prepared_hierarchy.csv')
+        return self.dataset, self.hierarchy
+
+    def create_col_name(station_id, station_name, suffix):
+        name = f'{station_name} ({station_id}) {suffix}'
+        return name
+
+
+
+
     def line_plot(self,title):
         trace1 = go.Scatter(x=self.hydro['Data'], y=self.hydro['GŁOGÓW (151160060) Stan wody [cm]'], name='Stacja Głogów',marker_color='#fcb040')
         trace2 = go.Scatter(x=self.hydro['Data'], y=self.hydro['RACIBÓRZ-MIEDONIA (150180060) Stan wody [cm]'], name='Stacja Racibórz-Miedonia',marker_color='#035891',)
@@ -86,12 +103,61 @@ class DataAnalysis:
                            plot_bgcolor='rgba(0,0,0,0)')
         return fig
 
+    def corr_stations(self):
+        rs=literal_eval(self.rs)
+        df = {'rs': rs, 'Offset': list(range(-9,10))}
+        df = pd.DataFrame(data=df)
+        data = px.line(df,y='rs',x='Offset')
+        layout = go.Layout()
+
+        fig = go.Figure(data=data, layout=layout)
+        fig.update_layout(
+            xaxis_title='Offset', yaxis_title='Pearson r',
+            xaxis_tickvals=[-9, -6, -3, 0, 3, 6, 9],
+            xaxis_range=[-9, -9], yaxis_range=[0, 1])
+        fig.add_trace(go.Scatter(x=[0, 0], y=[0, 1], mode='lines', name='Center'))
+        fig.add_trace(go.Scatter(x=[df._get_value(df['rs'].idxmax(), 'Offset'),df._get_value(df['rs'].idxmax(), 'Offset')]
+                                 , y=[0, 1], mode='lines', name='Peak synchrony'))
+        return fig
+    def load_corr_stations(self, path='../results/'):
+        self.df_corr = pd.read_csv(path+'corr_stations.csv')
+        self.rs = self.df_corr['corr'][0]
+        self.df_corr = self.df_corr.drop(self.df_corr.index[0])
+        return None
+    def corr_stations_2(self, pierwsza_stacja='GŁOGÓW', druga_stacja='RACIBÓRZ (350180540) Suma opadów [mm]'):
+        #dodac tytul pierwsza i druga stacja
+        index = self.df_corr[(self.df_corr['pierwsza_stacja'] == pierwsza_stacja) & (self.df_corr['druga_stacja'] == druga_stacja)].index[0]
+        corr = self.df_corr._get_value(index, 'corr')
+        rs = literal_eval(corr)
+        df = {'rs': rs, 'Offset': list(range(-9, 10))}
+        df = pd.DataFrame(data=df)
+        data = px.line(df, y='rs', x='Offset')
+        layout = go.Layout()
+        fig = go.Figure(data=data, layout=layout)
+        fig.update_layout(
+            xaxis_title='Offset', yaxis_title='Pearson r',
+            xaxis_tickvals=[-9, -6, -3, 0, 3, 6, 9],
+            xaxis_range=[-9, -9], yaxis_range=[0, 1])
+        fig.add_trace(go.Scatter(x=[0, 0], y=[0, 1], mode='lines', name='Center'))
+        fig.add_trace(
+            go.Scatter(x=[df._get_value(df['rs'].idxmax(), 'Offset'), df._get_value(df['rs'].idxmax(), 'Offset')],
+                       y=[0, 1], mode='lines', name='Peak synchrony'))
+        return fig
 
 
 
-    # def preprocessor(self):
-    #     self.df['Data'] = pd.to_datetime(self.df['Data'], format='%Y-%m-%d')
-    #     return None
+class SaveData():
+    def __init__(self):
+        self.df = pd.DataFrame(columns=['pierwsza_stacja','druga_stacja','corr'])
+    def add_to_df(self,first_station,second_station, rs):
+        self.df = self.df.append(pd.DataFrame([[first_station,second_station, rs]], columns=['pierwsza_stacja','druga_stacja','corr']))
+        return  None
+    def save_df(self):
+        self.df.to_csv('../results/corr_stations.csv', index=False)
+
+
+
+
 
 
 

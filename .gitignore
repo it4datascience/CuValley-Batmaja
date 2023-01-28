@@ -31,3 +31,4 @@ __pycache__/
 # notebooks for experiments
 experiments/
 venv/
+/expl_data_analysis/EDA_test.ipynb
