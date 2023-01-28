@@ -19,6 +19,19 @@ ml.load_data()
 figure_1 = ml.model_evaluation_plot()
 figure_2 = ml.model_evaluation_plot(model='Bayesian Ridge')
 
+drop_style = {'background-color': '#cfa527', 'textAlign': 'center', 'margin': 'auto', 'color':'black'}
+station_cols = ml.models_historical_forecasts['Stacja'].unique()
+horizon_cols = []
+drop_station = dcc.Dropdown(id='drop-4',
+                            options=[{"label":i, "value":i} for i in station_cols],
+                            placeholder='Wybierz stację do analizy', className='dropdown',multi=True,
+                            style=drop_style
+                            )
+drop_horizon = dcc.Dropdown(id='drop-5',
+                            options=[{"label":i, "value":i} for i in horizon_cols],
+                            placeholder='Wybierz horyzont czasowy do analizy', className='dropdown',multi=True,
+                            style=drop_style)
+
 
 
 
@@ -51,6 +64,9 @@ def render_content(tab):
     if tab=='tab-1':
         return html.Div([
             html.Br(),
+            drop_station,
+            html.Br(),
+            drop_horizon,
             html.Div([
                 html.Br(),
                 dcc.Graph(figure=figure_1),
@@ -62,6 +78,9 @@ def render_content(tab):
     elif tab == 'tab-2':
         return html.Div([
             html.Br(),
+            drop_station,
+            html.Br(),
+            drop_horizon,
             html.Div([
                 html.Br(),
                 dcc.Graph(figure=figure_2),

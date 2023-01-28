@@ -183,8 +183,6 @@ class MLModels():
         df = self.models_historical_forecasts[(self.models_historical_forecasts['Model'] == model)]
         df=df[(df['Stacja']==target_to_viz)]
         df_2 = self.dataset
-
-        #d = df[f'Forecast_-{horizon_to_viz}D']
         trace1 = go.Scatter(x=df.Data,
                             y=df[f'Forecast_-{horizon_to_viz}D'], marker_color='#fcb040', name = 'Prognoza modelu')
         trace2 = go.Scatter(x=df_2['Data'],

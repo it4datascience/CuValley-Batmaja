@@ -10,6 +10,7 @@ figure_1 = da.line_plot("Stan poziomu wody w stacjach Głogów i Racibórz-Miedo
 figure_2 = da.corr_stations()
 figure_3 = da.corr_stations_2()
 
+
 layout = html.Div([
 # tytul
 
