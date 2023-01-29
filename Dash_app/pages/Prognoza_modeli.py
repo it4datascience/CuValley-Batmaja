@@ -83,5 +83,5 @@ def update_graph(drop,tab):
         model = 'Bayesian Ridge'
     if drop is not None:
         target_to_viz = drop
-    figure = ml.model_evaluation_plot(model=model, target_to_viz=target_to_viz)
+    figure = ml.model_forecast_plot(model=model, target_to_viz=target_to_viz)
     return [figure]
