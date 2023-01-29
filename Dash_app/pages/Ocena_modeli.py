@@ -1,28 +1,23 @@
 import dash
 from dash import html, dcc,callback, Input, Output
-from joblib import load
-import pandas as pd
-import dalex as dx
 from src.plots import MLModels
-dash.register_page(__name__, order=2)
+import re
 
-
-with open('../Dash_app/assets/fitted_model.pkl', 'rb') as file:
-    model = load(file)
-X_test = pd.read_csv('../Dash_app/assets/X_test.csv')
-y_test = pd.read_csv('../Dash_app/assets/y_test.csv')
+dash.register_page(__name__, order=1)
 
 ml = MLModels()
 ml.load_data()
 figure_1 = ml.model_evaluation_plot()
 figure_2 = ml.model_evaluation_plot(model='Bayesian Ridge')
+dataframe = ml.models_historical_forecasts
+dataframe_2 = ml.dataset
 
 drop_style = { 'background-color': '#fcb040','textAlign': 'center', 'margin': 'auto', 'color':'black'}
 station_cols = ml.models_historical_forecasts['Stacja'].unique()
 horizon_cols = ml.models_historical_forecasts.columns.drop(labels=['Data','Model','Stacja','Zmienne'])
 drop_station = dcc.Dropdown(id='drop-4',
                             options=[{"label":i, "value":i} for i in station_cols],
-                            placeholder='Wybierz stację do analizy', className='dropdown',multi=True,
+                            placeholder='Wybierz stację do analizy', className='dropdown',multi=False,
                             style=drop_style
                             )
 drop_horizon = dcc.Dropdown(id='drop-5',
@@ -96,24 +91,22 @@ def render_content(tab):
          ],
         [Input('drop-4', 'value'),
         Input('drop-5', 'value'),
-        Input('tabs-1', 'value')]
+        Input('tabs-2', 'value')]
 )
 def update_graph(drop,drop_2,tab):
-    figure=dash.no_update
+    target_to_viz='GŁOGÓW (151160060) Stan wody [cm]'
+    horizon_to_viz = 7
+    model = 'Baseline'
     if tab == 'tab-1':
         model='Baseline'
-        target_to_viz = drop,
-        horizon_to_viz = 7,
-        title = ''
     elif tab == 'tab-2':
         model = 'Bayesian Ridge'
     if drop is not None:
-        ml.load_data()
-        figure = ml.model_evaluation_plot(model = model,target_to_viz=drop,horizon_to_viz=drop_2)
+        target_to_viz = drop
     elif drop_2 is not None:
-        ml.load_data()
-        figure = ml.model_evaluation_plot(model=model, target_to_viz=drop, horizon_to_viz=drop_2)
-    return figure
+        horizon_to_viz = int(re.findall(r'\d+', drop_2)[0])
+    figure = ml.model_evaluation_plot(model=model, target_to_viz=target_to_viz, horizon_to_viz=horizon_to_viz)
+    return [figure]
 
 
 
