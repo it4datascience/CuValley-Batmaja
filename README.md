@@ -48,7 +48,7 @@ Dokonane walidacje czy backtesty nie niosły ze sobą wycieku danych (brak losow
 * Prognoza Modeli
 
 
-![prognoza_modeli](https://user-images.githubusercontent.com/101253790/215296948-1ad3c19f-2de9-405e-b675-c5bbae5a4e20.gif)
+![image](https://user-images.githubusercontent.com/101253790/215312327-0e957d61-4cb8-4102-bd6a-acd5c19f97ed.png)
 
 
 ## Uruchomienie Projektu
