@@ -4,7 +4,7 @@
 
 Projekt uczenia maszynowego do predykcji poziomu wody w Odrze zrealizowany w ramach Hackathonu [**CuValley Hack**](https://cuvalley.com/).
 
-Rezultaty zostały przedstawione w interaktywnej aplikacji dostępnej pod adresem https://batmaja-cuvalley-kw5yuowusq-lm.a.run.app
+Rezultaty zostały przedstawione w interaktywnej aplikacji dostępnej pod adresem https://batmaja-cuvalley.onrender.com
 
 ## Spis Treści
 * [O Projekcie](#o-projekcie)
@@ -33,7 +33,7 @@ Dokonane walidacje czy backtesty nie niosły ze sobą wycieku danych (brak losow
 
 * Docker
 
-* Hosting - Google Cloud Run
+* Hosting - Google Cloud Run (edit 03.05.2023: przeniesiony na render.com)
 
 ## Aplikacja
 
